@@ -428,6 +428,8 @@ extension JXSegmentedListContainerView: UICollectionViewDataSource, UICollection
     }
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        return
+        
         guard scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating else {
             return
         }
@@ -475,14 +477,19 @@ extension JXSegmentedListContainerView: UICollectionViewDataSource, UICollection
     }
 
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        //滑动到一半又取消滑动处理
-        if willAppearIndex != -1 && willDisappearIndex != -1 {
-            listWillDisappear(at: willAppearIndex)
-            listWillAppear(at: willDisappearIndex)
-            listDidDisappear(at: willAppearIndex)
-            listDidAppear(at: willDisappearIndex)
-            willDisappearIndex = -1
-            willAppearIndex = -1
+      
+        let index = Int(round(scrollView.contentOffset.x / scrollView.bounds.size.width))
+        
+        guard checkIndexValid(index) else {
+            return
+        }
+        willAppearIndex = -1
+        willDisappearIndex = -1
+        if currentIndex != index {
+            listWillDisappear(at: currentIndex)
+            listWillAppear(at: index)
+            listDidDisappear(at: currentIndex)
+            listDidAppear(at: index)
         }
     }
 }
